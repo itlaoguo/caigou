@@ -164,7 +164,7 @@ class Permissions extends Model
     public function storeBy(array $data): mixed
     {
         return DB::transaction(function () use ($data){
-            if ($data['type'] != self::isTopMenu() && ! $data['parent_id']) {
+            if ($data['type'] != MenuType::Top->value() && ! $data['parent_id']) {
                 throw new FailedException('请选择父级菜单');
             }
 
@@ -245,7 +245,7 @@ class Permissions extends Model
      */
     public function updateBy($id, array $data): mixed
     {
-        if ($data['type'] != self::isTopMenu() && ! $data['parent_id']) {
+        if ($data['type'] != MenuType::Top->value() && ! $data['parent_id']) {
             throw new FailedException('请选择父级菜单');
         }
 
