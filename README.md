@@ -49,9 +49,6 @@
 
 <img src="wechat.png" width="300"/>
 
-## 额外模块
-- [CMS 模块](https://github.com/catch-admin/cms)
-
 ## 项目地址
 - [github catchadmin](https://github.com/jaguarjack/catch-admin)
 ## 文档地址
