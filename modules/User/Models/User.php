@@ -32,6 +32,8 @@ class User extends Model implements AuthenticatableContract
         'id', 'username', 'email', 'avatar', 'password', 'remember_token', 'creator_id', 'status', 'department_id', 'login_ip', 'login_at', 'created_at', 'updated_at', 'deleted_at'
     ];
 
+    protected array $defaultHidden = ['password', 'remember_token'];
+
     /**
      * @var array|string[]
      */
