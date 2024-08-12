@@ -28,7 +28,8 @@
 
 ## 桌面端（付费）
 如果需要桌面端后台，使用 `Electron` 技术栈。可以联系微信咨询
-<img src="wechat.png" width="300"/>
+
+<img src="wechat.png" width="200"/>
 
 ## ⚠️Thinkphp 用户注意
 由于新版本使用 `Laravel` 开发，所以请使用 `thinkphp` 分支或者 tag2.6.2，thinkphp 版本已经非常稳定了。
@@ -51,7 +52,7 @@
 - 加入 Q 群 `302266230` 暗号 `catchadmin`。
 - 加微信入群，新建🆕
 
-<img src="wechat.png" width="300"/>
+<img src="wechat.png" width="200"/>
 
 ## 项目地址
 - [github catchadmin](https://github.com/jaguarjack/catch-admin)
