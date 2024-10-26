@@ -71,6 +71,9 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+
+        // 创建 storage 对应的软连接
+        public_path('uploads') => storage_path('uploads')
     ],
 
 ];
