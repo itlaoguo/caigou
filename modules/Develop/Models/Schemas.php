@@ -48,6 +48,18 @@ class Schemas extends CatchModel
      */
     public function storeBy(array $data): bool
     {
+        // 从已有 schema 中选择
+        if (isset($data['schema_name'])) {
+            $columns = SchemaFacade::getColumnListing($data['schema_name']);
+
+            return parent::storeBy([
+                'module' => $data['module'],
+                'name' => $data['schema_name'],
+                'columns' => implode(',', $columns),
+                'is_soft_delete' => isset($columns['deleted_at']) ? Status::Enable : Status::Disable,
+            ]);
+        }
+
         $schema = $data['schema'];
 
         $structures = $data['structures'];
