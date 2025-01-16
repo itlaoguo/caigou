@@ -29,8 +29,6 @@ class RolesController extends Controller
      */
     public function index(): mixed
     {
-        return ResponseBuilder::code(100)
-            ->data(['1111']);
         return $this->model->setBeforeGetList(function ($query) {
             return $query->with(['permissions' => function ($query) {
                 $query->select('id');
