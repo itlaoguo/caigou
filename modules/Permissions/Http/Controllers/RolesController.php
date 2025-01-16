@@ -6,7 +6,9 @@ namespace Modules\Permissions\Http\Controllers;
 
 use Catch\Base\CatchController as Controller;
 use Catch\Exceptions\FailedException;
+use Catch\Support\ResponseBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Exceptions\ReportableHandler;
 use Illuminate\Http\Request;
 use Modules\Permissions\Enums\DataRange;
 use Modules\Permissions\Models\Roles;
@@ -27,6 +29,8 @@ class RolesController extends Controller
      */
     public function index(): mixed
     {
+        return ResponseBuilder::code(100)
+            ->data(['1111']);
         return $this->model->setBeforeGetList(function ($query) {
             return $query->with(['permissions' => function ($query) {
                 $query->select('id');
