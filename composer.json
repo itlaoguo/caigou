@@ -14,15 +14,14 @@
         "php": "^8.2",
         "ext-pdo": "*",
         "ext-zip": "*",
-        "guzzlehttp/guzzle": "^7.8.1",
-        "laravel/framework": "^v11.36.1",
-        "laravel/tinker": "^v2.9.0",
-        "catchadmin/core": "^0.4.2"
+        "laravel/framework": "^v12.8.1",
+        "laravel/tinker": "^v2.10.1",
+        "catchadmin/core": "^0.4.5"
     },
     "require-dev": {
-        "fakerphp/faker": "^v1.23.1",
-        "mockery/mockery": "^1.6.9",
-        "pestphp/pest": "^v2.34.2"
+        "fakerphp/faker": "^v1.24.1",
+        "mockery/mockery": "^1.6.12",
+        "pestphp/pest": "^v3.7.2"
     },
     "autoload": {
         "psr-4": {
@@ -52,6 +51,10 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd\" \"cd web && yarn dev\" \"php artisan serve\" --names='vite,server'"
         ],
         "cs-diff": "./fixer/vendor/bin/php-cs-fixer fix --dry-run --diff",
         "cs": "./fixer/vendor/bin/php-cs-fixer fix"
