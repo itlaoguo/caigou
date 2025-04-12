@@ -12,9 +12,11 @@ class Schemas implements OptionInterface
     {
         $options = [];
 
-        $tablePrefix = DB::connection()->getTablePrefix();
+        $connection = DB::connection();
+        $databaseName = $connection->getDatabaseName();
+        $tablePrefix = $connection->getTablePrefix();
 
-        foreach (Schema::getTables() as $table) {
+        foreach (Schema::getTables($databaseName) as $table) {
             $tableName = Str::of($table['name'])->remove($tablePrefix);
 
             $options[] = [
