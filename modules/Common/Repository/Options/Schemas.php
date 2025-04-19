@@ -17,7 +17,7 @@ class Schemas implements OptionInterface
         $tablePrefix = $connection->getTablePrefix();
 
         foreach (Schema::getTables($databaseName) as $table) {
-            $tableName = Str::of($table['name'])->remove($tablePrefix);
+            $tableName = Str::of($table['name'])->replaceStart($tablePrefix, '');
 
             $options[] = [
                 'label' => $tableName . "\t\t\t\t" . $table['comment'],
