@@ -102,6 +102,8 @@ class Schemas extends CatchModel
     {
         $schema = parent::firstBy($id);
 
+        $columns = [];
+
         foreach (SchemaFacade::getColumns($schema->name) as $column) {
             $columns[] = [
                 'name' => $column['name'],
