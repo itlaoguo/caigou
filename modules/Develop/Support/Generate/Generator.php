@@ -144,7 +144,7 @@ class Generator
      */
     protected function createModel(): bool|string
     {
-        $model = new Model($this->gen['model'], $this->gen['schema'], $this->gen['module']);
+        $model = new Model($this->gen['model'], $this->gen['schema'], $this->gen['paginate'] ?? true);
 
         $this->modelName = $model->getModelName();
 

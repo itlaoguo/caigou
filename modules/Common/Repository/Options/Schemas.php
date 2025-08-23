@@ -11,7 +11,6 @@ class Schemas implements OptionInterface
     public function get(): array
     {
         $options = [];
-
         $connection = DB::connection();
         $databaseName = $connection->getDatabaseName();
         $tablePrefix = $connection->getTablePrefix();
@@ -20,7 +19,7 @@ class Schemas implements OptionInterface
             $tableName = Str::of($table['name'])->replaceStart($tablePrefix, '');
 
             $options[] = [
-                'label' => $tableName . "\t\t\t\t" . $table['comment'],
+                'label' => $tableName."\t\t\t\t".$table['comment'],
                 'value' => $tableName,
             ];
         }

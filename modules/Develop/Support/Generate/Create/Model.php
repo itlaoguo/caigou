@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Modules\Develop\Support\Generate\Create;
 
 use Catch\CatchAdmin;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema as SchemaFacade;
@@ -71,11 +72,11 @@ class Model extends Creator
      * get content
      *
      * @return string
+     * @throws FileNotFoundException
      */
     public function getContent(): string
     {
         $modelStub = File::get($this->getModelStub());
-
 
         return Str::of($modelStub)->replace($this->replace, [$this->getUses(),
             $this->getProperties(),
@@ -246,7 +247,7 @@ Text;
      */
     protected function isPaginate(): string
     {
-        return $this->isPaginate ? '' : Str::of('protected bool $isPaginate = false;')->toString();
+        return $this->isPaginate ? Str::of('protected bool $isPaginate = true;')->toString() : Str::of('protected bool $isPaginate = false;')->toString();
     }
 
     /**

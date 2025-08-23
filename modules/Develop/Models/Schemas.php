@@ -111,6 +111,7 @@ class Schemas extends CatchModel
                 'nullable' => $column['nullable'],
                 'default' => $column['default'],
                 'comment' => $column['comment'],
+                'label' => $column['comment'] ?? ''
             ];
         }
 
