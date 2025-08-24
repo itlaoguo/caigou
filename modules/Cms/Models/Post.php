@@ -83,11 +83,10 @@ class Post extends Model
      */
     public function getList(): mixed
     {
-        return $this->select('id', 'title', 'status', 'is_can_comment', 'order', 'top', 'updated_at')
+        return $this->select('id', 'title', 'status', 'is_can_comment', 'order', 'top', 'updated_at', 'author')
                     ->addSelect([
-                        'category' => Category::whereColumn('id', $this->table. '.category_id')->select('name')->limit(1)
-                    ])->addSelect([
-                        'author' => User::whereColumn('author', 'users.id')->select('username')->limit(1)
+                        'category' => Category::whereColumn('id', $this->table. '.category_id')->select('name')->limit(1),
+                        'author_name' => User::whereColumn('author', 'users.id')->select('username')->limit(1)
                     ])
                     ->orderByDesc('id')
                     ->when($title = Request::get('title'), function ($query) use ($title){

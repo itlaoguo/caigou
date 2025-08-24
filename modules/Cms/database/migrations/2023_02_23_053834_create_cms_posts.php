@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('title')->comment('标题');
             $table->string('cover')->default('')->comment('封面');
             $table->longText('content')->comment('内容');
-            $table->tinyText('excerpt')->comment('摘录');
+            $table->tinyText('excerpt')->default('')->comment('摘录');
             $table->tinyInteger('status')->default(1)->comment('文章状态 1 草稿 2 发布');
             $table->tinyInteger('is_can_comment')->default(1)->comment('是否可以评论 1 可以 2 不可以');
             $table->tinyInteger('visible')->default(1)->comment('可见性 1 公开 2 私密 3 密码查看');
