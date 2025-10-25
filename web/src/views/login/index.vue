@@ -43,7 +43,7 @@
           </el-button>
         </div>
 
-        <div class="w-full text-center text-sm text-gray-400 mt-8 mb-10">{{ $t('system.name') }} @copyright 2018-{{ new Date().getFullYear() }}</div>
+        <div class="w-full text-center text-sm text-gray-400 mt-8 mb-10">{{ $t('system.name') }} @copyright {{ new Date().getFullYear() }}</div>
       </div>
     </div>
   </div>

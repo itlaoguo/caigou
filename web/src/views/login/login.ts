@@ -6,8 +6,8 @@ import { t } from '@/support/helper'
 
 export const useLogin = () => {
   const params = reactive({
-    email: 'catch@admin.com',
-    password: 'catchadmin',
+    email: '',
+    password: '',
     remember: false
   })
 

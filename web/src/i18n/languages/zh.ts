@@ -1,6 +1,6 @@
 const zh = {
   system: {
-    name: 'CatchAdmin 管理系统',
+    name: '华能云成数字产融科技（雄安）有限公司-采购管理系统',
     chinese: '中文',
     english: '英文',
     confirm: '确定',
