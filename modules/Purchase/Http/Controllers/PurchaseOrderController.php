@@ -28,9 +28,20 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-        return $this->model->post();
+        return $this->model->getPurchaserShops();//获取shopid
 
         //return $this->model->storeBy($request->all());
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function render(Request $request)
+    {
+
+        return $this->model->renderAndSplitPurchaseOrder($request->all());
+
     }
 
     /**
@@ -60,4 +71,22 @@ class PurchaseOrderController extends Controller
     {
         return $this->model->deleteBy($id);
     }
+
+    /**
+     * 获取采购店铺列表
+     * @return mixed
+     */
+    public function shops(Request $request){
+
+        return $this->model->getPurchaserShops($request);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function renderAndSplitPurchaseOrder(Request $request){
+
+        return $this->model->renderAndSplitPurchaseOrder($request);
+    }
+
 }
