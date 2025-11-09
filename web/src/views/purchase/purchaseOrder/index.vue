@@ -55,7 +55,7 @@ import { useGetList } from '@/composables/curd/useGetList'
 import { useDestroy } from '@/composables/curd/useDestroy'
 import { useOpen } from '@/composables/curd/useOpen'
 
-const api = 'purchase/purchase/order'
+const api = 'purchase/order'
 
 const { data, query, search, reset, loading } = useGetList(api)
 const { destroy, deleted } = useDestroy()

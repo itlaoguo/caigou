@@ -15,6 +15,7 @@ use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Utils\Utils;
 
 use Catch\Base\CatchModel as Model;
+use function PHPUnit\Framework\isArray;
 
 /**
  * @property $id
@@ -25,7 +26,7 @@ use Catch\Base\CatchModel as Model;
  * @property $updated_at
  * @property $deleted_at
 */
-class AfterSaleOrder extends Model
+class PurchaseOrder extends Model
 {
 
 
@@ -89,17 +90,15 @@ class AfterSaleOrder extends Model
         try {
             // 调用API并返回结果
             $response = $this->client->listPurchaserShopsWithOptions($listPurchaserShopsRequest, $headers, $this->runtime);
-            $data = Utils::toJSONString(Tea::merge($response->body));
-            var_dump($data);exit();
 
             // 将响应对象转换为数组，以便Laravel可以正确序列化为JSON
             // ListPurchaserShopsResponse继承自Model类，具有toMap()方法
-            $data = $response->toMap();
+            $data =Tea::merge($response->body);
             $shopList = [];
 
-            if($data['statusCode'] === 200) {
+            if(isArray($data['shopList']) && !empty($data['shopList'])) {
 
-                $_shopList = $data['body']['shopList'];
+                $_shopList = $data['shopList'];
                 foreach ($_shopList as $shop) {
                     if($shop['status'] === 'WORKING') {
                         $shopList[] = $shop;
