@@ -1,7 +1,7 @@
-import Upload from './Upload.vue'
+import Upload from './Upload2.vue'
 
 export default {
-  name: 'upload',
+  name: 'upload2',
   component: Upload,
   type: 'basic'
 }

@@ -1,40 +1,57 @@
 import { defineStore } from 'pinia'
 
 /**
- * 表信息
+ * 基礎信息
  */
 
+export interface BaseInfo {
+  enter_way: string
+  name: string
+  description: string
+  mode: string
+  account: string
+} 
 
-/**
- * generate
- */
-interface PurchaseOrder {
-  one: One
-  two: Two[]
+export interface UploadInfo {
+  file: string
+}
+
+export interface Product {
+  product_id: string
+  product_name: string
+  product_price: number
+  product_quantity: number
+  product_total: number
+  product_remark: string
+}
+
+interface CreatePurchaseOrder {
+  baseInfo: BaseInfo
+  uploadInfo: UploadInfo
+  productList: Product[]
   is_finished: boolean
 }
 
 /**
  * useSchemaStore
  */
-export const useSchemaStore = defineStore('schemaStore', {
-  state(): CreateSchema {
+export const usePurchaseOrderStore= defineStore('purchaseOrderStore', {
+  state(): CreatePurchaseOrder {
     return {
-      // schema
-      schema: Object.assign({
-        module: '',
+      // 基本信息
+      baseInfo: Object.assign({
+        enter_way: 'excel',
         name: '',
-        comment: '',
-        engine: 'InnoDB',
-        charset: 'utf8mb4',
-        collection: 'utf8mb4_unicode_ci',
-        created_at: true,
-        creator_id: true,
-        updated_at: true,
-        deleted_at: true,
+        description: '',
+        mode: '',
+        account: '',
       }),
-      // structures
-      structures: [] as Structure[],
+      // 上傳信息
+      uploadInfo: Object.assign({
+        file: '',
+      }),
+      // 商品信息
+      productList: [] as Product[],
 
       // is finished
       is_finished: false,
@@ -43,12 +60,15 @@ export const useSchemaStore = defineStore('schemaStore', {
 
   // store getters
   getters: {
-    getSchema(): Schema {
-      return this.schema
+    getBaseInfo(): BaseInfo {
+      return this.baseInfo
+    },
+    getUploadInfo(): UploadInfo {
+      return this.uploadInfo
     },
 
-    getStructures(): Structure[] {
-      return this.structures
+    getProductList(): Product[] {
+      return this.productList
     },
 
     getFinished(): boolean {
@@ -59,50 +79,23 @@ export const useSchemaStore = defineStore('schemaStore', {
   // store actions
   actions: {
     // set schema
-    setSchema(schema: Schema): void {
-      this.schema = schema
+    setBaseInfo(baseInfo: BaseInfo): void {
+      this.baseInfo = baseInfo
     },
 
-    setStructures(structures: Array<Structure>): void {
-      this.structures = structures
+    setUploadInfo(uploadInfo: UploadInfo): void {
+      this.uploadInfo = uploadInfo
+    },
+
+    setProductList(productList: Array<Product>): void {
+      this.productList = productList
     },
     // add structure
-    addStructure(structure: Structure): void {
-      if (structure.id) {
-        this.structures = this.structures.filter((s: Structure) => {
-          if (s.id === structure.id) {
-            s = structure
-          }
-          return s
-        })
-      } else {
-        structure.id = this.structures.length + 1
-        this.structures.push(structure)
-      }
+    addProduct(product: Product): void {
+        
+        this.productList.push(product)
     },
-
-    // filter structures
-    filterStructures(id: number) {
-      this.structures = this.structures.filter((s: Structure) => {
-        return !(s.id === id)
-      })
-    },
-
-    // init structure
-    initStructure(): Structure {
-      return Object.assign({
-        id: 0,
-        field: '',
-        label: '',
-        type: '',
-        length: 0,
-        nullable: false,
-        unique: false,
-        default: '',
-        comment: '',
-      })
-    },
-
+    
     /**
      * finished
      */

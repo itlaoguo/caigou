@@ -24,9 +24,7 @@
       </template>
     </Search>
     <div class="table-default">
-      <div class="flex justify-between mb-3 pt-5 pl-5">
-        <el-button type="primary" @click="open()">创建批量采购单</el-button>
-      </div>
+     
       <el-table :data="tableData" class="mt-3" v-loading="loading" >
         <el-table-column prop="number" label="批量采购单号" />
         <el-table-column prop="name" label="采购单名称" />
