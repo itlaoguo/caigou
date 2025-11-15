@@ -4,7 +4,7 @@
             <el-form-item label="上传Excel文件" prop="file">
                 <el-upload
                     ref="uploadRef"
-                    class="upload-demo"
+                    class="upload"
                     drag
                     :action="uploadAction"
                     :headers="uploadHeaders"
@@ -26,9 +26,7 @@
                         </div>
                     </template>
                 </el-upload>
-                <div v-if="uploadInfo.file" class="mt-2 text-sm text-green-600">
-                    已上传文件: {{ fileName }}
-                </div>
+                
             </el-form-item>
         </el-form>
         <div class="flex justify-between w-full pl-24 mx-auto mt-4 sm:w-96">
@@ -54,6 +52,7 @@ const emits = defineEmits(['prev', 'next'])
 const uploadInfo = ref(purchaseOrderStore.getUploadInfo)
 const form = ref<FormInstance>()
 const uploadRef = ref<UploadInstance>()
+
 const loading = ref(false)
 const fileList = ref<any[]>([])
 
@@ -63,7 +62,7 @@ const uploadAction = computed(() => {
 })
 
 const uploadHeaders = computed(() => {
-    const token = getAuthToken()
+    const token = 'Bearer ' + getAuthToken()
     return {
         authorization: token || '',
         'Request-from': 'Dashboard'
@@ -72,8 +71,7 @@ const uploadHeaders = computed(() => {
 
 const fileName = computed(() => {
     if (uploadInfo.value.file) {
-        const path = uploadInfo.value.file
-        return path.substring(path.lastIndexOf('/') + 1)
+        return uploadInfo.value.file
     }
     return ''
 })
@@ -101,8 +99,11 @@ const beforeUpload = (file: UploadRawFile) => {
 
 const handleSuccess = (response: any) => {
     if (response.code === Code.SUCCESS) {
-        uploadInfo.value.file = response.data.path
-        purchaseOrderStore.setUploadInfo(unref(uploadInfo))
+        uploadInfo.value.file = response.data.originalName
+        uploadInfo.value.path = response.data.path
+        uploadInfo.value.url = response.data.url
+        console.log('----------uploadInfo-----------',uploadInfo.value);
+        //purchaseOrderStore.setUploadInfo(unref(uploadInfo))
         Message.success('文件上传成功')
     } else {
         Message.error(response.message || '文件上传失败')

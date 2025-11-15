@@ -86,6 +86,7 @@ class PurchaseOrderController extends Controller
      */
     public function shop(Request $request){
 
+
         return $this->model->getPurchaserShop($request);
     }
 
@@ -95,6 +96,13 @@ class PurchaseOrderController extends Controller
     public function renderAndSplitPurchaseOrder(Request $request){
 
         return $this->model->renderAndSplitPurchaseOrder($request);
+    }
+
+    public function parseExcel(Request $request){
+
+        $file = base_path().DIRECTORY_SEPARATOR.'public\uploads\file\2025-11-15\2025H7rjS2tZvv1763185436.xlsx';
+
+
     }
 
 }

@@ -16,6 +16,6 @@ Route::prefix('purchase')->group(function(){
 
 
 Route::apiResource('order', OrderController::class);
-Route::apiResource('aftersale', AfterSaleOrderController::class);
+Route::apiResource('afterSale', AfterSaleOrderController::class);
 
 

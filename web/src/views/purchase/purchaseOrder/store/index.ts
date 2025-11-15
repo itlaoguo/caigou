@@ -12,6 +12,8 @@ export interface BaseInfo {
 
 export interface UploadInfo {
   file: string
+  path: string
+  url: string
 }
 
 export interface Product {
@@ -45,6 +47,8 @@ export const usePurchaseOrderStore= defineStore('purchaseOrderStore', {
       // 上傳信息
       uploadInfo: Object.assign({
         file: '',
+        path: '',
+        url: ''
       }),
       // 商品信息
       productList: [] as Product[],

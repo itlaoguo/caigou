@@ -13,12 +13,6 @@
                 <el-descriptions-item label="任务描述">
                     {{ baseInfo.description || '-' }}
                 </el-descriptions-item>
-                <el-descriptions-item label="下单模式">
-                    {{ baseInfo.mode || '-' }}
-                </el-descriptions-item>
-                <el-descriptions-item label="下单账号">
-                    {{ baseInfo.account || '-' }}
-                </el-descriptions-item>
                 <el-descriptions-item label="Excel文件">
                     {{ uploadInfo.file ? fileName : '-' }}
                 </el-descriptions-item>
@@ -27,7 +21,18 @@
 
         <!-- 产品列表 -->
         <div class="mb-6">
-            <h3 class="mb-4 text-lg font-semibold">采购产品列表</h3>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">采购产品列表</h3>
+                <el-button 
+                    type="primary" 
+                    size="small" 
+                    @click="parseExcel" 
+                    :loading="loading"
+                    :disabled="!uploadInfo.file"
+                >
+                    重新解析Excel
+                </el-button>
+            </div>
             <el-table :data="productList" border v-loading="loading" style="width: 100%">
                 <el-table-column type="index" label="序号" width="60" align="center" />
                 <el-table-column prop="product_id" label="产品ID" width="120" />
@@ -106,31 +111,38 @@ const totalAmount = computed(() => {
 // 解析Excel文件，获取产品列表
 const parseExcel = async () => {
     if (!uploadInfo.value.file) {
+        Message.warning('请先上传Excel文件')
+        return
+    }
+
+    if (!baseInfo.value.name) {
+        Message.warning('请先填写采购单基本信息')
         return
     }
 
     loading.value = true
     try {
-        // 调用后端接口解析Excel
-        // 这里假设后端有一个接口可以解析Excel并返回产品列表
-        // 如果后端没有这个接口，可能需要前端使用xlsx库解析
+        // 调用后端接口解析Excel，传递第一步和第二步的信息
         const response = await http.post('purchase/prepare', {
             file: uploadInfo.value.file,
-            baseInfo: baseInfo.value
+            name: baseInfo.value.name,
+            enter_way: baseInfo.value.enter_way,
+            description: baseInfo.value.description
         })
 
         if (response.data.code === Code.SUCCESS) {
-            const products = response.data.data || []
+            const products = response.data.data?.products || response.data.data || []
             // 将后端返回的数据转换为Product格式
             const formattedProducts: Product[] = products.map((item: any) => ({
                 product_id: item.product_id || item.id || '',
                 product_name: item.product_name || item.name || '',
                 product_price: parseFloat(item.product_price || item.price || 0),
                 product_quantity: parseInt(item.product_quantity || item.quantity || 0),
-                product_total: parseFloat(item.product_total || item.total || 0),
+                product_total: parseFloat(item.product_total || item.total || (item.product_price || item.price || 0) * (item.product_quantity || item.quantity || 0)),
                 product_remark: item.product_remark || item.remark || ''
             }))
             purchaseOrderStore.setProductList(formattedProducts)
+            Message.success('Excel文件解析成功')
         } else {
             Message.error(response.data.message || '解析Excel文件失败')
         }
@@ -149,10 +161,18 @@ const submitForm = async () => {
         return
     }
 
+    if (!baseInfo.value.name) {
+        Message.warning('请先填写采购单基本信息')
+        return
+    }
+
     submitting.value = true
     try {
+        // 组装提交数据：第一步的基本信息 + 第二步的文件信息 + 第三步的产品列表
         const formData = {
-            ...baseInfo.value,
+            name: baseInfo.value.name,
+            enter_way: baseInfo.value.enter_way,
+            description: baseInfo.value.description,
             file: uploadInfo.value.file,
             products: productList.value
         }
@@ -160,10 +180,12 @@ const submitForm = async () => {
         const response = await http.post('purchase/order', formData)
 
         if (response.data.code === Code.SUCCESS) {
-            Message.success('采购单创建成功')
+            Message.success(response.data.message || '采购单创建成功')
             purchaseOrderStore.finished()
-            emits('next')
-            // 可以在这里触发父组件关闭对话框或跳转
+            // 延迟一下让用户看到成功消息
+            setTimeout(() => {
+                emits('next')
+            }, 1500)
         } else {
             Message.error(response.data.message || '提交失败')
         }
@@ -176,8 +198,8 @@ const submitForm = async () => {
 }
 
 onMounted(() => {
-    // 如果已经有文件，自动解析
-    if (uploadInfo.value.file && productList.value.length === 0) {
+    // 进入第三步时，自动调用接口获取产品列表
+    if (uploadInfo.value.path && productList.value.length === 0) {
         parseExcel()
     }
 })
