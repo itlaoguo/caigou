@@ -8,7 +8,7 @@ use Modules\Purchase\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 
 
-class PurchaseOrderController extends Controller
+class OrderController extends Controller
 {
     public function __construct(
         protected readonly PurchaseOrder $model
@@ -28,8 +28,9 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-        return $this->model->getPurchaserShops($request);//获取shopid
+        return $this->model->getPurchaserShops();//获取shopid
 
+        //return $this->model->storeBy($request->all());
     }
 
     /**

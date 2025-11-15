@@ -19,12 +19,6 @@
                     clearable 
                 />
             </el-form-item>
-            <el-form-item label="下单模式" prop="mode">
-                <el-input v-model="baseInfo.mode" name="mode" placeholder="请输入下单模式" clearable />
-            </el-form-item>
-            <el-form-item label="下单账号" prop="account">
-                <el-input v-model="baseInfo.account" name="account" placeholder="请输入下单账号" clearable />
-            </el-form-item>
         </el-form>
         <div class="flex justify-end w-full pl-24 mx-auto mt-4 sm:w-96">
             <el-button class="mt-5" type="primary" @click="submitCreateTable(form)">{{ $t('system.next') }}</el-button>
@@ -50,12 +44,6 @@ const rules = {
     ],
     name: [
         { required: true, message: '请输入采购单名称', trigger: 'blur' }
-    ],
-    mode: [
-        { required: true, message: '请输入下单模式', trigger: 'blur' }
-    ],
-    account: [
-        { required: true, message: '请输入下单账号', trigger: 'blur' }
     ]
 }
 

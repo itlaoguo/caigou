@@ -59,7 +59,7 @@ const fileList = ref<any[]>([])
 
 const uploadAction = computed(() => {
     const baseUrl = getBaseUrl()
-    return `${baseUrl}/common/upload/file`
+    return `${baseUrl}/upload/file`
 })
 
 const uploadHeaders = computed(() => {

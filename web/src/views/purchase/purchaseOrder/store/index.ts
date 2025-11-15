@@ -8,8 +8,6 @@ export interface BaseInfo {
   enter_way: string
   name: string
   description: string
-  mode: string
-  account: string
 } 
 
 export interface UploadInfo {
@@ -42,9 +40,7 @@ export const usePurchaseOrderStore= defineStore('purchaseOrderStore', {
       baseInfo: Object.assign({
         enter_way: 'excel',
         name: '',
-        description: '',
-        mode: '',
-        account: '',
+        description: ''
       }),
       // 上傳信息
       uploadInfo: Object.assign({

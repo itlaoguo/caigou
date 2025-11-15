@@ -137,6 +137,7 @@ class LinkMall
     }
 
     /**
+     * 查询订单
      * @param $parameters
      * @return mixed
      */
@@ -162,6 +163,65 @@ class LinkMall
         }
 
 
+
+    }
+
+    /**
+     * 拆单并渲染采购单
+     * @param $parameters
+     * @return mixed
+     */
+    public function splitPurchaseOrder($parameters){
+
+    }
+
+    /**
+     * 创建采购单
+     * @param $parameters
+     * @return mixed
+     */
+    public function createPurchaseOrder($parameters){
+
+    }
+
+    /**
+     * 获取采购单状态
+     * @param $parameters
+     * @return mixed
+     */
+    public function getPurchaseOrderStatus($purchaseOrderId){
+
+        try {
+            // 调用API并返回结果
+            $response = $this->client->getPurchaseOrderStatus($purchaseOrderId);
+            $data = Utils::toJSONString(Tea::merge($response->body));
+            var_dump($data);exit();
+
+        }
+        catch (Exception $error) {
+            if (!($error instanceof TeaError)) {
+                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
+            }
+
+            // 安全地访问错误数据，避免数组访问null错误
+            $errorData = [
+                'message' => $error->message ?? '未知错误',
+                'code' => $error->code ?? '未知错误码'
+            ];
+
+            // 只有当error->data存在且包含Recommend时才访问
+            if (isset($error->data) && is_array($error->data) && isset($error->data["Recommend"])) {
+                $errorData['recommend'] = $error->data["Recommend"];
+            }
+
+            // 返回错误信息而不是直接var_dump
+            throw new \RuntimeException('LinkedMall API调用失败: ' . json_encode($errorData, JSON_UNESCAPED_UNICODE));
+        }
+
+    }
+
+
+    public function renderRefundOrder($parameters){
 
     }
 }

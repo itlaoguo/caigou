@@ -26,7 +26,7 @@ class LocalUpload extends Upload
      */
     protected function addUrl($path): mixed
     {
-        $path['path'] = config('app.url') . '/'.
+        $path['url'] = config('app.url') . '/'.
 
                         Str::of($path['path'])->replace('\\', '/')->toString();
 

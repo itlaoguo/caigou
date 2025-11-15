@@ -14,13 +14,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import BasicInfo from './steps/basicInfo.vue'
 import UploadInfo from './steps/uploadInfo.vue'
 import ProductList from './steps/productList.vue'
-import { usePurchaseOrderStore } from './store'
+// import { usePurchaseOrderStore } from './store'
 
-const purchaseOrderStore = usePurchaseOrderStore()
+// const purchaseOrderStore = usePurchaseOrderStore()
 
 const active = ref(1)
 

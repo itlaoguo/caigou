@@ -131,6 +131,38 @@ class PurchaseOrder extends Model
 
     }
 
+    public function getPurchaserShop($paramters){
+
+        $purchaseId = $paramters['purchaserId'];
+
+        try {
+            // 复制代码运行请自行打印 API 的返回值
+            $response = $this->client->getPurchaserShopWithOptions($purchaseId, [], $this->runtime);
+            $data =Tea::merge($response->body);
+            return $data;
+
+        }
+        catch (Exception $error) {
+            if (!($error instanceof TeaError)) {
+                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
+            }
+
+            // 安全地访问错误数据，避免数组访问null错误
+            $errorData = [
+                'message' => $error->message ?? '未知错误',
+                'code' => $error->code ?? '未知错误码'
+            ];
+
+            // 只有当error->data存在且包含Recommend时才访问
+            if (isset($error->data) && is_array($error->data) && isset($error->data["Recommend"])) {
+                $errorData['recommend'] = $error->data["Recommend"];
+            }
+
+            // 返回错误信息而不是直接var_dump
+            throw new \RuntimeException('LinkedMall API调用失败: ' . json_encode($errorData, JSON_UNESCAPED_UNICODE));
+        }
+    }
+
     /**
      * 渲染并拆单
      * @return void
