@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build --mode production",
+    "build": "vite build --mode production",
     "build:release": "vue-tsc --noEmit && vite build --mode release",
     "preview": "vite preview"
   },

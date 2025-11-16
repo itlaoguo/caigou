@@ -34,12 +34,13 @@
       <el-table :data="tableData" class="mt-3" v-loading="loading" >
         <el-table-column prop="productList" label="商品基本信息" />
         <el-table-column prop="orderInfo" label="订单信息" />
-        <el-table-column prop="amountInfo" label="订单金额" />
+        <el-table-column prop="amountInfo" label="金额" />
+        <el-table-column prop="reason" label="退款原因" />
         <el-table-column prop="purchaser" label="采购方" />
-        <el-table-column prop="supplier" label="供给方" />
-        <el-table-column prop="pay_way" label="支付方式" />
-        <el-table-column prop="created_at" label="下单时间" />
-        <el-table-column prop="afersale_status" label="订单状态" />
+        <el-table-column prop="supplier" label="供应方" />
+        <el-table-column prop="created_at" label="申请时间" />
+        <el-table-column prop="afersale_type" label="售后类型" />
+        <el-table-column prop="afersale_status" label="售后状态" />
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <Update @click="open(scope.row.id)" />
