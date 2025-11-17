@@ -111,6 +111,24 @@ export const usePurchaseOrderStore= defineStore('purchaseOrderStore', {
     },
 
     /**
+     * 重置所有步骤的数据
+     */
+    resetAll(): void {
+      this.baseInfo = {
+        enter_way: 'excel',
+        name: '',
+        description: ''
+      }
+      this.uploadInfo = {
+        file: '',
+        path: '',
+        url: ''
+      }
+      this.productList = []
+      this.is_finished = false
+    },
+
+    /**
      * unfinished
      */
     start(): void {

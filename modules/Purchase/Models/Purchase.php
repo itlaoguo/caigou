@@ -4,22 +4,12 @@ declare(strict_types=1);
 
 namespace Modules\Purchase\Models;
 
-use AlibabaCloud\SDK\Linkedmall\V20230930\Models\AddressInfo;
-use AlibabaCloud\SDK\Linkedmall\V20230930\Models\OrderRenderProductDTO;
-use AlibabaCloud\SDK\Linkedmall\V20230930\Models\PurchaseOrderRenderQuery;
-use Catch\Exceptions\FailedException;
-use Darabonba\OpenApi\Models\Config;
-use AlibabaCloud\SDK\Linkedmall\V20230930\Linkedmall;
-use AlibabaCloud\Tea\Utils\Utils\RuntimeOptions;
-use \Exception;
-use AlibabaCloud\Tea\Exception\TeaError;
-use AlibabaCloud\SDK\Linkedmall\V20230930\Models\ListPurchaserShopsRequest;
-use AlibabaCloud\SDK\Linkedmall\V20230930\Models\SplitPurchaseOrderRequest;
-use AlibabaCloud\Tea\Tea;
-use AlibabaCloud\Tea\Utils\Utils;
 
-use Catch\Base\CatchModel as Model;
-use function PHPUnit\Framework\isArray;
+//use Catch\Base\CatchModel as Model;
+use Catch\Traits\DB\BaseOperate;
+use Catch\Traits\DB\ScopeTrait;
+use Catch\Traits\DB\Trans;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property $id
@@ -33,6 +23,7 @@ use function PHPUnit\Framework\isArray;
 class Purchase extends Model
 {
 
+    use BaseOperate, Trans, ScopeTrait;
 
     protected $table = 'purchase';
 
@@ -52,7 +43,7 @@ class Purchase extends Model
      * @var array
      */
     public array $searchable = [
-
+        'name' => 'like',
     ];
 
     protected bool $isPaginate = true;

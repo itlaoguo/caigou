@@ -26,10 +26,19 @@
     <div class="table-default">
      
       <el-table :data="tableData" class="mt-3" v-loading="loading" >
-        <el-table-column prop="number" label="批量采购单号" />
         <el-table-column prop="name" label="采购单名称" />
         <el-table-column prop="created_at" label="创建时间" />
         <el-table-column prop="updated_at" label="修改时间" />
+        <el-table-column prop="status" label="状态" />
+        <el-table-column prop="detail" label="详细任务状态">
+          <template #default="scope">
+                      <p>采购商品数量：{{ scope.row.created_at }}</p>
+                      <p>采购子任务：{{ scope.row.created_at }}</p>
+                      <p>已执行子任务：{{ scope.row.created_at }}</p>
+                      <p>失败：{{ scope.row.created_at }}</p>
+                      <p>成功{{ scope.row.created_at }}</p>
+                  </template>
+        </el-table-column>
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <Update @click="open(scope.row.id)" />
