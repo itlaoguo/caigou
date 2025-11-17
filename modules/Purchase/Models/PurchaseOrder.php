@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Purchase\Models;
 
+use AlibabaCloud\SDK\Linkedmall\V20230930\Models\AddressInfo;
+use AlibabaCloud\SDK\Linkedmall\V20230930\Models\OrderRenderProductDTO;
+use AlibabaCloud\SDK\Linkedmall\V20230930\Models\PurchaseOrderRenderQuery;
+use Catch\Exceptions\FailedException;
 use Darabonba\OpenApi\Models\Config;
 use AlibabaCloud\SDK\Linkedmall\V20230930\Linkedmall;
 use AlibabaCloud\Tea\Utils\Utils\RuntimeOptions;
@@ -32,23 +36,70 @@ class PurchaseOrder extends Model
 
     protected $table = 'purchase_order';
 
-    protected $fillable = [ 'id', 'number', 'name', 'creator_id', 'created_at', 'updated_at', 'deleted_at' ];
+    protected $fillable = [
+        'id',
+        'purchase_id',
+        'product_id',
+        'product_title',
+        'sku_id',
+        'sku_title',
+        'price',
+        'product_pic_url',
+        'purchaser_id',
+        'quantity',
+        'can_sell',
+        'address_detail',
+        'receiver' ,
+        'receiver_phone',
+        'status'
+    ];
 
     /**
      * @var array
      */
-    protected array $fields = ['id','number','name','created_at','updated_at'];
+    protected array $fields = [
+        'purchase_id',
+        'product_id',
+        'product_title',
+        'sku_id',
+        'sku_title',
+        'price',
+        'product_pic_url',
+        'purchaser_id',
+        'quantity',
+        'can_sell',
+        'address_detail',
+        'receiver' ,
+        'receiver_phone',
+        'status'
+    ];
 
     /**
      * @var array
      */
-    protected array $form = ['number','name'];
+    protected array $form = [
+        'product_id',
+        'product_title',
+        'sku_id',
+        'sku_title',
+        'price',
+        'product_pic_url',
+        'purchaser_id',
+        'quantity',
+        'can_sell',
+        'address_detail',
+        'receiver' ,
+        'receiver_phone'
+    ];
 
     /**
      * @var array
      */
     public array $searchable = [
-
+        'product_id',
+        'product_title',
+        'sku_id',
+        'sku_title',
     ];
 
     protected bool $isPaginate = true;
@@ -165,19 +216,33 @@ class PurchaseOrder extends Model
 
     /**
      * 渲染并拆单
-     * @return void
+     * @return mixed
      */
     public function renderAndSplitPurchaseOrder($parameters){
 
-        $splitPurchaseOrderRequest = SplitPurchaseOrderRequest::fromMap([
-            'body' => [
-                'buyerId'=> $parameters,
-                'deliveryAddress'=> [
+        $purchaseOrderRenderQueryProductListOrderRenderProductDTO0 = new OrderRenderProductDTO([
+            "quantity" => $parameters[5],
+            "purchaserId" => "PID2200006482",
+            "productId" => $parameters[1],
+            "skuId" => $parameters[3],
+        ]);
 
-                ],
-                'productList'=> '',
-                'extInfo'=> [],
+        $purchaseOrderRenderQueryAddressInfo = new AddressInfo([
+            "addressDetail" => $parameters[8],
+            "receiverPhone" => $parameters[7],
+            "receiver" => $parameters[6],
+        ]);
+
+        $purchaseOrderRenderQuery = new PurchaseOrderRenderQuery([
+            "buyerId" => $parameters[9]??"20251101",
+            "deliveryAddress" => $purchaseOrderRenderQueryAddressInfo,
+            "productList" => [
+                $purchaseOrderRenderQueryProductListOrderRenderProductDTO0
             ]
+        ]);
+
+        $splitPurchaseOrderRequest = new SplitPurchaseOrderRequest([
+            "body" => $purchaseOrderRenderQuery
         ]);
 
         $headers = [];
@@ -185,9 +250,8 @@ class PurchaseOrder extends Model
         try {
             // 复制代码运行请自行打印 API 的返回值
             $response = $this->client->splitPurchaseOrderWithOptions($splitPurchaseOrderRequest, $headers, $this->runtime);
-
-            $data = $response->toMap();
-            var_dump($data);
+            $data =Tea::merge($response->body);
+            return $data;
         }
         catch (Exception $error) {
             if (!($error instanceof TeaError)) {
@@ -199,7 +263,7 @@ class PurchaseOrder extends Model
                 'code' => $error->code ?? '未知错误码'
             ];
 
-            throw new \RuntimeException('LinkedMall API调用失败: ' . json_encode($errorData, JSON_UNESCAPED_UNICODE));
+            throw new FailedException('LinkedMall API调用失败: ' . json_encode($errorData, JSON_UNESCAPED_UNICODE));
         }
     }
 

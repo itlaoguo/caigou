@@ -18,11 +18,17 @@ export interface UploadInfo {
 
 export interface Product {
   product_id: string
-  product_name: string
-  product_price: number
-  product_quantity: number
-  product_total: number
-  product_remark: string
+  product_title: string
+  sku_id: string
+  sku_title: string
+  price: number
+  product_pic_url: string
+  purchaser_id: string
+  quantity: number
+  can_sell: number
+  address_detail: string
+  receiver: string
+  receiver_phone: string
 }
 
 interface CreatePurchaseOrder {

@@ -8,7 +8,7 @@
       <br/>
       <BasicInfo v-if="active === 1" @next="next" @prev="prev" />
       <UploadInfo v-if="active === 2" @next="next" @prev="prev" />
-      <ProductList v-if="active === 3" @next="next" @prev="prev" />
+      <ProductList v-if="active === 3" @next="next" @prev="prev" @reset="reset" />
     </div>
 
 </template>
@@ -33,6 +33,9 @@ const prev = () => {
   if (active.value > 1) {
     active.value--
   }
+}
+const reset = () => {
+  active.value = 1
 }
 
 </script>

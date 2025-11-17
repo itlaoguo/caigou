@@ -4,6 +4,8 @@ namespace Modules\Purchase\Models;
 
 use AlibabaCloud\SDK\Linkedmall\V20230930\Linkedmall;
 use AlibabaCloud\SDK\Linkedmall\V20230930\Models\ListPurchaserShopsRequest;
+use AlibabaCloud\SDK\Linkedmall\V20230930\Models\OrderPageQuery;
+use AlibabaCloud\SDK\Linkedmall\V20230930\Models\QueryOrdersRequest;
 use AlibabaCloud\SDK\Linkedmall\V20230930\Models\SplitPurchaseOrderRequest;
 use AlibabaCloud\Tea\Exception\TeaError;
 use AlibabaCloud\Tea\Tea;
@@ -198,7 +200,7 @@ class LinkMall
             var_dump($data);exit();
 
         }
-        catch (Exception $error) {
+        catch (\Exception $error) {
             if (!($error instanceof TeaError)) {
                 $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
             }
@@ -222,6 +224,54 @@ class LinkMall
 
 
     public function renderRefundOrder($parameters){
+
+    }
+
+    /**
+     *
+     * @param $parameters
+     * @return mixed
+     */
+    public function queryOrders($parameters){
+
+        $orderPageQuery = new OrderPageQuery([
+            "pageSize" => $parameters['pageSize']??10,
+            "pageNumber" => $parameters['page']??1,
+            "purchaseOrderId" => $parameters['purchaseOrderId'],
+        ]);
+        $queryOrdersRequest = new QueryOrdersRequest([
+            "body" => $orderPageQuery
+        ]);
+
+        $headers = [];
+        try {
+            // 复制代码运行请自行打印 API 的返回值
+            $response= $this->client->queryOrdersWithOptions($queryOrdersRequest, $headers, $this->runtime);
+
+            $data = Utils::toJSONString(Tea::merge($response->body));
+            var_dump($data);exit();
+        }
+        catch (\Exception $error) {
+            if (!($error instanceof TeaError)) {
+                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
+            }
+
+            // 安全地访问错误数据，避免数组访问null错误
+            $errorData = [
+                'message' => $error->message ?? '未知错误',
+                'code' => $error->code ?? '未知错误码'
+            ];
+
+            // 只有当error->data存在且包含Recommend时才访问
+            if (isset($error->data) && is_array($error->data) && isset($error->data["Recommend"])) {
+                $errorData['recommend'] = $error->data["Recommend"];
+            }
+
+            // 返回错误信息而不是直接var_dump
+            throw new \RuntimeException('LinkedMall API调用失败: ' . json_encode($errorData, JSON_UNESCAPED_UNICODE));
+        }
+
+
 
     }
 }

@@ -24,6 +24,7 @@
                         <div class="el-upload__tip">
                             仅支持 .xlsx 或 .xls 格式的Excel文件，文件大小不超过 10MB
                         </div>
+                        <p><a style="color: var(--el-color-primary);" href="/public/uploads/file/批量采购demo.xlsx" download>下载批量采购demo.xlsx</a></p>
                     </template>
                 </el-upload>
                 

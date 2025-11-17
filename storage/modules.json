@@ -1,0 +1,32 @@
+[
+    {
+        "title": "权限管理",
+        "name": "permissions",
+        "path": "permissions",
+        "keywords": "权限, 角色, 部门",
+        "description": "权限管理模块",
+        "provider": "\\Modules\\Permissions\\Providers\\PermissionsServiceProvider",
+        "version": "1.0.0",
+        "enable": true
+    },
+    {
+        "title": "采购管理",
+        "path": "purchase",
+        "keywords": "采购",
+        "description": "采购",
+        "name": "purchase",
+        "provider": "\\Modules\\Purchase\\Providers\\PurchaseServiceProvider",
+        "version": "1.0.0",
+        "enable": true
+    },
+    {
+        "title": "交易",
+        "path": "Order",
+        "keywords": null,
+        "description": null,
+        "name": "order",
+        "provider": "\\Modules\\Order\\Providers\\OrderServiceProvider",
+        "version": "1.0.0",
+        "enable": true
+    }
+]

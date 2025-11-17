@@ -1,63 +1,49 @@
 <template>
     <div class="w-full sm:w-[90%] mx-auto pb-10">
-        <!-- 采购单基本信息展示 -->
-        <div class="mb-6">
-            <h3 class="mb-4 text-lg font-semibold">采购单基本信息</h3>
-            <el-descriptions :column="2" border>
-                <el-descriptions-item label="商品录入方式">
-                    {{ baseInfo.enter_way === 'excel' ? 'Excel录入' : baseInfo.enter_way }}
-                </el-descriptions-item>
-                <el-descriptions-item label="名称">
-                    {{ baseInfo.name || '-' }}
-                </el-descriptions-item>
-                <el-descriptions-item label="任务描述">
-                    {{ baseInfo.description || '-' }}
-                </el-descriptions-item>
-                <el-descriptions-item label="Excel文件">
-                    {{ uploadInfo.file ? fileName : '-' }}
-                </el-descriptions-item>
-            </el-descriptions>
-        </div>
-
         <!-- 产品列表 -->
         <div class="mb-6">
-            <div class="flex justify-between items-center mb-4">
+            <!-- <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold">采购产品列表</h3>
-                <el-button 
-                    type="primary" 
-                    size="small" 
-                    @click="parseExcel" 
-                    :loading="loading"
-                    :disabled="!uploadInfo.file"
-                >
-                    重新解析Excel
-                </el-button>
-            </div>
+            </div> -->
             <el-table :data="productList" border v-loading="loading" style="width: 100%">
-                <el-table-column type="index" label="序号" width="60" align="center" />
-                <el-table-column prop="product_id" label="产品ID" width="120" />
-                <el-table-column prop="product_name" label="产品名称" min-width="200" />
-                <el-table-column prop="product_price" label="单价" width="120" align="right">
+                <el-table-column label="商品信息" >
                     <template #default="scope">
-                        ¥{{ scope.row.product_price?.toFixed(2) || '0.00' }}
+                        <div class="flex">
+                            <div style="width:80px;height: 80px;margin:0 10px;">
+                                <img :src="scope.row.product_pic_url" width="100" height="100">
+                            </div>
+                            <div class="">
+                                <p class="title">{{ scope.row.product_title }}</p>
+                                <p>{{ scope.row.product_id }}</p>
+                            </div>
+                        </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="product_quantity" label="数量" width="100" align="right" />
-                <el-table-column prop="product_total" label="小计" width="120" align="right">
+                <el-table-column prop="sku_title" label="SKU名称" width="200" />
+                <el-table-column prop="sku_id" label="SKU ID" width="200" />
+                <el-table-column label="价格" width="100">
                     <template #default="scope">
-                        ¥{{ scope.row.product_total?.toFixed(2) || '0.00' }}
+                        ¥{{ (scope.row.price/100)?.toFixed(2) || '0.00' }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="product_remark" label="备注" min-width="150" />
+                <el-table-column prop="quantity" label="数量"  width="200" />
+                <el-table-column label="收货人信息" >
+                    <template #default="scope">
+                        <p>收货人：{{ scope.row.receiver }}</p>
+                        <p>手机号码：{{ scope.row.receiver_phone }}</p>
+                        <p>收货地址：{{ scope.row.address_detail }}</p>
+                        <!-- <p>用户ID:{{ scope.row.address_detail }}</p> -->
+                    </template>
+                </el-table-column>
             </el-table>
             <div v-if="productList.length === 0" class="py-8 text-center text-gray-500">
                 暂无产品数据，请先上传Excel文件
             </div>
-            <div v-if="productList.length > 0" class="mt-4 text-right">
+            <!-- <div v-if="productList.length > 0" class="mt-4 text-right">
                 <span class="text-lg font-semibold">
                     总计: <span class="text-red-600">¥{{ totalAmount.toFixed(2) }}</span>
                 </span>
-            </div>
+            </div> -->
         </div>
 
         <!-- 操作按钮 -->
@@ -78,15 +64,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, unref } from 'vue'
+import { useRouter } from 'vue-router'
 import { usePurchaseOrderStore, type Product } from '../store'
 import http from '@/support/http'
 import Message from '@/support/message'
 import { Code } from '@/enum/app'
-import { getFilename } from '@/support/helper'
 
+const router = useRouter()
 const purchaseOrderStore = usePurchaseOrderStore()
 
-const emits = defineEmits(['prev', 'next'])
+const emits = defineEmits(['prev', 'next', 'reset'])
 
 const baseInfo = computed(() => purchaseOrderStore.getBaseInfo)
 const uploadInfo = computed(() => purchaseOrderStore.getUploadInfo)
@@ -95,22 +82,10 @@ const productList = computed(() => purchaseOrderStore.getProductList)
 const loading = ref(false)
 const submitting = ref(false)
 
-const fileName = computed(() => {
-    if (uploadInfo.value.file) {
-        return getFilename(uploadInfo.value.file)
-    }
-    return ''
-})
-
-const totalAmount = computed(() => {
-    return productList.value.reduce((sum, item) => {
-        return sum + (item.product_total || 0)
-    }, 0)
-})
 
 // 解析Excel文件，获取产品列表
 const parseExcel = async () => {
-    if (!uploadInfo.value.file) {
+    if (!uploadInfo.value.path) {
         Message.warning('请先上传Excel文件')
         return
     }
@@ -123,23 +98,27 @@ const parseExcel = async () => {
     loading.value = true
     try {
         // 调用后端接口解析Excel，传递第一步和第二步的信息
-        const response = await http.post('purchase/prepare', {
-            file: uploadInfo.value.file,
-            name: baseInfo.value.name,
-            enter_way: baseInfo.value.enter_way,
-            description: baseInfo.value.description
+        const response = await http.get('purchase/prepare', {
+            path: uploadInfo.value.path
         })
+        console.log(response,'--------purchase/prepare------------');
 
         if (response.data.code === Code.SUCCESS) {
-            const products = response.data.data?.products || response.data.data || []
+            const products = response.data.data || []
             // 将后端返回的数据转换为Product格式
             const formattedProducts: Product[] = products.map((item: any) => ({
-                product_id: item.product_id || item.id || '',
-                product_name: item.product_name || item.name || '',
-                product_price: parseFloat(item.product_price || item.price || 0),
-                product_quantity: parseInt(item.product_quantity || item.quantity || 0),
-                product_total: parseFloat(item.product_total || item.total || (item.product_price || item.price || 0) * (item.product_quantity || item.quantity || 0)),
-                product_remark: item.product_remark || item.remark || ''
+                product_id: item.productId,
+                product_title: item.productTitle,
+                sku_id: item.skuId,
+                sku_title: item.skuTitle,
+                price: item.price,
+                product_pic_url: item.productPicUrl,
+                purchaser_id: item.purchaserId,
+                quantity: item.quantity,
+                can_sell: item.canSell,
+                address_detail: item.addressDetail,
+                receiver: item.receiver,
+                receiver_phone: item.receiverPhone
             }))
             purchaseOrderStore.setProductList(formattedProducts)
             Message.success('Excel文件解析成功')
@@ -173,7 +152,7 @@ const submitForm = async () => {
             name: baseInfo.value.name,
             enter_way: baseInfo.value.enter_way,
             description: baseInfo.value.description,
-            file: uploadInfo.value.file,
+            path: uploadInfo.value.path,
             products: productList.value
         }
 
@@ -181,10 +160,13 @@ const submitForm = async () => {
 
         if (response.data.code === Code.SUCCESS) {
             Message.success(response.data.message || '采购单创建成功')
-            purchaseOrderStore.finished()
+            // 重置所有步骤的数据
+            purchaseOrderStore.resetAll()
+            // 重置步骤指示器
+            emits('reset')
             // 延迟一下让用户看到成功消息
             setTimeout(() => {
-                emits('next')
+                router.push('/purchase/purchase')
             }, 1500)
         } else {
             Message.error(response.data.message || '提交失败')
