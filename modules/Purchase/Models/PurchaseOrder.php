@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Modules\Purchase\Models;
 
 use AlibabaCloud\SDK\Linkedmall\V20230930\Models\AddressInfo;
+use AlibabaCloud\SDK\Linkedmall\V20230930\Models\CreatePurchaseOrderRequest;
 use AlibabaCloud\SDK\Linkedmall\V20230930\Models\OrderRenderProductDTO;
+use AlibabaCloud\SDK\Linkedmall\V20230930\Models\ProductDTO;
+use AlibabaCloud\SDK\Linkedmall\V20230930\Models\PurchaseOrderCreateCmd;
 use AlibabaCloud\SDK\Linkedmall\V20230930\Models\PurchaseOrderRenderQuery;
 use Catch\Exceptions\FailedException;
 use Darabonba\OpenApi\Models\Config;
@@ -265,6 +268,57 @@ class PurchaseOrder extends Model
 
             throw new FailedException('LinkedMall API调用失败: ' . json_encode($errorData, JSON_UNESCAPED_UNICODE));
         }
+    }
+
+    /**
+     * 创建采购单
+     * @param $paramters
+     * @return mixed
+     */
+    public function createPurchaseOrder($paramters){
+
+        $purchaseOrderCreateCmdProductListProductDTO0 = new ProductDTO([
+            "purchaserId" => "PID2200006482",
+            "quantity" => $paramters['quantity'],
+            "productId" => $paramters['product_id'],
+            "skuId" => $paramters['sku_id'],
+        ]);
+        $purchaseOrderCreateCmdAddressInfo = new AddressInfo([
+            "receiver" => $paramters['receiver'],
+            "receiverPhone" =>  $paramters['receiver_phone'],
+            "addressDetail" => $paramters['address_detail'],
+        ]);
+        $purchaseOrderCreateCmd = new PurchaseOrderCreateCmd([
+            "outerPurchaseOrderId" => date('Ymd',time()).$paramters['id'],
+            "buyerId" => $paramters['buyer_id']??"9527",
+            "deliveryAddress" => $purchaseOrderCreateCmdAddressInfo,
+            "productList" => [
+                $purchaseOrderCreateCmdProductListProductDTO0
+            ]
+        ]);
+
+        $createPurchaseOrderRequest = new CreatePurchaseOrderRequest([
+            "body" => $purchaseOrderCreateCmd
+        ]);
+        $headers = [];
+        try {
+            // 复制代码运行请自行打印 API 的返回值
+            $response = $this->client->createPurchaseOrderWithOptions($createPurchaseOrderRequest, $headers, $this->runtime);
+            return Tea::merge($response->body);
+        }
+        catch (Exception $error) {
+            if (!($error instanceof TeaError)) {
+                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
+            }
+
+            $errorData = [
+                'message' => $error->message ?? '未知错误',
+                'code' => $error->code ?? '未知错误码'
+            ];
+
+            throw new FailedException('LinkedMall API调用失败: ' . json_encode($errorData, JSON_UNESCAPED_UNICODE));
+        }
+
     }
 
     /**

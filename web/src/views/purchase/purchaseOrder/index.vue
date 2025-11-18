@@ -41,23 +41,17 @@
         </el-table-column>
         <el-table-column label="操作" width="200">
           <template #default="scope">
-            <Update @click="open(scope.row.id)" />
-            <Destroy @click="destroy(api, scope.row.id)" />
+            <el-button size="small" type="success" @click="view(scope.row.id)"><Icon name="eye" class="w-3 mr-1" /> 查看</el-button>
           </template>
         </el-table-column>
       </el-table>
       <Paginate />
     </div>
-
-    <Dialog v-model="visible" :title="title" destroy-on-close width="80%">
-      <Create @close="close(reset)" :primary="id" :api="api" />
-    </Dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted } from 'vue'
-import Create from './create.vue'
 import { useGetList } from '@/composables/curd/useGetList'
 import { useDestroy } from '@/composables/curd/useDestroy'
 import { useOpen } from '@/composables/curd/useOpen'
@@ -69,6 +63,12 @@ const { destroy, deleted } = useDestroy()
 const { open, close, title, visible, id } = useOpen()
 
 const tableData = computed(() => data.value?.data)
+
+const view = primaryId => {
+  schemaVisible.value = true
+
+  id.value = primaryId
+}
 
 onMounted(() => {
   search()
