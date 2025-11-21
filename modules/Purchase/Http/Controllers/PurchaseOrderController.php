@@ -25,7 +25,8 @@ class PurchaseOrderController extends Controller
      */
     public function index(Request $request): mixed
     {
-        return $this->purchaseModel->getList();
+        $result = $this->purchaseModel->getList();
+        return $result;
     }
 
     /**

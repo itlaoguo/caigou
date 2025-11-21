@@ -56,6 +56,7 @@ class submitPurchaseOrder extends Command
 
                     $result = $purchaseOrder->createPurchaseOrder($parameters);
                     $purchaseOrderId = $result['purchaseOrderId'];
+                    var_dump($result);
 
                 }catch (\Exception $e) {
                     var_dump($e->getMessage());
