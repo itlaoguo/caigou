@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, unref, computed } from 'vue'
+import { ref, unref, computed, onMounted, watch } from 'vue'
 import { usePurchaseOrderStore } from '../store'
 import type { FormInstance, UploadInstance, UploadProps, UploadRawFile } from 'element-plus'
 import { getAuthToken, getBaseUrl } from '@/support/helper'
@@ -56,6 +56,34 @@ const uploadRef = ref<UploadInstance>()
 
 const loading = ref(false)
 const fileList = ref<any[]>([])
+
+// 从 store 中恢复上传的文件信息
+const restoreFileList = () => {
+    const storeInfo = purchaseOrderStore.getUploadInfo
+    if (storeInfo.file && storeInfo.url) {
+        fileList.value = [{
+            name: storeInfo.file,
+            url: storeInfo.url,
+            status: 'success'
+        }]
+        // 同步 uploadInfo
+        uploadInfo.value = { ...storeInfo }
+    } else {
+        fileList.value = []
+    }
+}
+
+// 监听 store 变化，当返回此步骤时恢复文件列表
+watch(() => purchaseOrderStore.getUploadInfo, (newVal) => {
+    if (newVal.file && newVal.url) {
+        restoreFileList()
+    }
+}, { deep: true })
+
+// 组件挂载时恢复文件列表
+onMounted(() => {
+    restoreFileList()
+})
 
 const uploadAction = computed(() => {
     const baseUrl = getBaseUrl()
@@ -103,8 +131,16 @@ const handleSuccess = (response: any) => {
         uploadInfo.value.file = response.data.originalName
         uploadInfo.value.path = response.data.path
         uploadInfo.value.url = response.data.url
-        console.log('----------uploadInfo-----------',uploadInfo.value);
-        //purchaseOrderStore.setUploadInfo(unref(uploadInfo))
+        
+        // 更新 fileList 显示
+        fileList.value = [{
+            name: response.data.originalName,
+            url: response.data.url,
+            status: 'success'
+        }]
+        
+        // 立即保存到 store
+        purchaseOrderStore.setUploadInfo(unref(uploadInfo))
         Message.success('文件上传成功')
     } else {
         Message.error(response.message || '文件上传失败')

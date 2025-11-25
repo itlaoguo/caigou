@@ -27,17 +27,17 @@ class Purchase extends Model
 
     protected $table = 'purchase';
 
-    protected $fillable = [ 'id', 'name', 'description','file', 'creator_id', 'created_at', 'updated_at', 'deleted_at' ];
+    protected $fillable = [ 'id', 'name', 'description','file', 'status', 'creator_id', 'created_at', 'updated_at', 'deleted_at' ];
 
     /**
      * @var array
      */
-    protected array $fields = ['id','name','file', 'created_at','updated_at'];
+    protected array $fields = ['id','name','file', 'status','created_at','updated_at'];
 
     /**
      * @var array
      */
-    protected array $form = ['name','description','file'];
+    protected array $form = ['name','description','file','status'];
 
     /**
      * @var array
@@ -53,5 +53,22 @@ class Purchase extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
         'deleted_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+    public function orders()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'purchase_id');
+    }
+
+    // 定义状态为1的订单关系
+    public function successOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'purchase_id')->where('status', 1);
+    }
+
+    public function failOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'purchase_id')->where('status', 2);
+    }
+
 
 }

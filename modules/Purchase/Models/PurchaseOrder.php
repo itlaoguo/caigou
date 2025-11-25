@@ -129,6 +129,11 @@ class PurchaseOrder extends Model
         ]);
     }
 
+    public function purchase()
+    {
+        return $this->belongsTo(Purchase::class, 'purchase_id');
+    }
+
     /**
      * 获取采购店铺信息
      * @return array

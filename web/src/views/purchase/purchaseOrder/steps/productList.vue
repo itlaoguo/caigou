@@ -14,13 +14,13 @@
                             </div>
                             <div class="">
                                 <p class="title">{{ scope.row.product_title }}</p>
-                                <p>{{ scope.row.product_id }}</p>
+                                <p>渠道商品ID:{{ scope.row.product_id }}</p>
                             </div>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column prop="sku_title" label="SKU名称" width="200" />
-                <el-table-column prop="sku_id" label="SKU ID" width="200" />
+                <el-table-column prop="sku_id" label="渠道商品SKU ID" width="200" />
                 <el-table-column label="价格" width="100">
                     <template #default="scope">
                         ¥{{ (scope.row.price/100)?.toFixed(2) || '0.00' }}

@@ -5,9 +5,11 @@ namespace Modules\Purchase\Http\Controllers;
 
 use Catch\Base\CatchController as Controller;
 use Catch\Exceptions\FailedException;
+use Modules\Permissions\Enums\MenuType;
 use Modules\Purchase\Models\Purchase;
 use Modules\Purchase\Models\PurchaseOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
@@ -25,8 +27,52 @@ class PurchaseOrderController extends Controller
      */
     public function index(Request $request): mixed
     {
-        $result = $this->purchaseModel->getList();
-        return $result;
+
+//        $result = Purchase::withCount([
+//            'orders as order_count', // 采购单数量
+//            'successOrders as success_order_count' // 状态为1的采购单数量
+//        ])
+//            ->select([
+//                'id',
+//                'name',
+//                'created_at',
+//                DB::raw('(SELECT SUM(CAST(quantity AS UNSIGNED)) FROM ymp_purchase_order WHERE ymp_purchase_order.purchase_id = ymp_purchase.id) as product_quantity')
+//            ])
+//            ->whereNull('deleted_at')
+//            ->get()
+//            ->map(function ($purchase) {
+//                return [
+//                    '采购名称' => $purchase->name,
+//                    '开始日期' => $purchase->created_at->format('Y-m-d'),
+//                    '采购单数量' => $purchase->order_count,
+//                    '采购产品数量' => $purchase->product_quantity ?: 0,
+//                    '成功采购单数量' => $purchase->success_order_count
+//                ];
+//            });
+//        $result = $this->purchaseModel->getList();
+
+        // $offset = ($request->page - 1) * $request->limit;
+
+        // $results = $this->purchaseModel->select('purchase.*')
+        //     ->selectRaw('(SELECT COUNT(*) FROM ymp_purchase_order ypo WHERE ypo.purchase_id = ymp_purchase.id) AS total_task')
+        //     ->selectRaw('(SELECT COUNT(*) FROM ymp_purchase_order ypo WHERE ypo.purchase_id = ymp_purchase.id AND status = 1) AS total_success_task')
+        //     ->selectRaw('(SELECT COUNT(*) FROM ymp_purchase_order ypo WHERE ypo.purchase_id = ymp_purchase.id AND status = 2) AS total_fail_task')
+        //     ->selectRaw('(SELECT SUM(quantity) FROM ymp_purchase_order ypo WHERE ypo.purchase_id = ymp_purchase.id) AS total_product')
+        //     ->whereNull('deleted_at')
+        //     ->getList();
+
+        $results = $this->purchaseModel->setBeforeGetList(function ($query){
+            $query->withCount([
+                'orders as total_task', // 采购单数量
+                'successOrders as total_success_task',  // 状态为1的采购单数量
+                'failOrders as total_fail_task' // 状态为2的采购单数量
+            ])
+            ->withSum('orders as total_product', 'quantity');
+            return $query;
+        })->getList();
+
+
+        return $results;
     }
 
     /**
@@ -35,7 +81,6 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
 
             $purchaseId = $this->purchaseModel->storeBy($request->only(['name','description','file']));
@@ -74,7 +119,16 @@ class PurchaseOrderController extends Controller
      */
     public function show($id)
     {
+
+
         return $this->model->firstBy($id);
+    }
+
+    public function lines($id){
+
+        return $this->model->setBeforeGetList(function($query) use ($id){
+            $query->where(['purchase_id', $id]);
+        })->getList();
     }
 
     /**
@@ -122,6 +176,7 @@ class PurchaseOrderController extends Controller
 
         $file = $request->input('path');
         $dataList = $this->parseExcel($file);
+
         if(!is_array($dataList) || empty($dataList)){
             throw new FailedException('未获得产品数据');
         }
@@ -132,36 +187,48 @@ class PurchaseOrderController extends Controller
 
             $result = $this->model->renderAndSplitPurchaseOrder($item);
 
-            if(!isset($result['orderList']) || !isset($result['addressList'])){
+            if(intval($result['canSell']) === 1){
 
-                continue;
+                $list[] = array(
+                    'productId'=>$result['orderList'][0]['productList'][0]['productId'],
+                    'productTitle'=>$result['orderList'][0]['productList'][0]['productTitle'],
+                    'skuId'=>$result['orderList'][0]['productList'][0]['skuId'],
+                    'skuTitle'=>$result['orderList'][0]['productList'][0]['skuTitle'],
+                    'price'=>$result['orderList'][0]['productList'][0]['price'],
+                    'productPicUrl'=>$result['orderList'][0]['productList'][0]['productPicUrl'],
+                    'purchaserId'=>$result['orderList'][0]['productList'][0]['purchaserId'],
+                    'quantity'=>$result['orderList'][0]['productList'][0]['quantity'],
+                    'canSell'=>$result['orderList'][0]['productList'][0]['canSell']?1:0,
+                    'addressDetail'=>$result['addressList'][0]['addressDetail'],
+                    'receiver'=>$result['addressList'][0]['receiver'],
+                    'receiverPhone'=>$result['addressList'][0]['receiverPhone']
+                );
+
+            }else{
+
+                $list[] = array(
+                    'productId'=>$result['unsellableOrderList'][0]['productList'][0]['productId'],
+                    'productTitle'=>$result['unsellableOrderList'][0]['productList'][0]['productTitle'],
+                    'skuId'=>$result['unsellableOrderList'][0]['productList'][0]['skuId'],
+                    'skuTitle'=>$result['unsellableOrderList'][0]['productList'][0]['skuTitle'],
+                    'price'=>$result['unsellableOrderList'][0]['productList'][0]['price'],
+                    'productPicUrl'=>$result['unsellableOrderList'][0]['productList'][0]['productPicUrl'],
+                    'purchaserId'=>$result['unsellableOrderList'][0]['productList'][0]['purchaserId'],
+                    'quantity'=>$result['unsellableOrderList'][0]['productList'][0]['quantity'],
+                    'canSell'=>$result['unsellableOrderList'][0]['productList'][0]['canSell']?1:0,
+                    'addressDetail'=>$result['addressList'][0]['addressDetail'],
+                    'receiver'=>$result['addressList'][0]['receiver'],
+                    'receiverPhone'=>$result['addressList'][0]['receiverPhone']
+                );
             }
 
-            $list[] = array(
-                'productId'=>$result['orderList'][0]['productList'][0]['productId'],
-                'productTitle'=>$result['orderList'][0]['productList'][0]['productTitle'],
-                'skuId'=>$result['orderList'][0]['productList'][0]['skuId'],
-                'skuTitle'=>$result['orderList'][0]['productList'][0]['skuTitle'],
-                'price'=>$result['orderList'][0]['productList'][0]['price'],
-                'productPicUrl'=>$result['orderList'][0]['productList'][0]['productPicUrl'],
-                'purchaserId'=>$result['orderList'][0]['productList'][0]['purchaserId'],
-                'quantity'=>$result['orderList'][0]['productList'][0]['quantity'],
-                'canSell'=>$result['orderList'][0]['productList'][0]['canSell']?1:0,
-                'addressDetail'=>$result['addressList'][0]['addressDetail'],
-                'receiver'=>$result['addressList'][0]['receiver'],
-                'receiverPhone'=>$result['addressList'][0]['receiverPhone']
-            );
         }
 
         return $list;
 
-
-
     }
 
     public function createPurchaseOrder(Request $request){
-
-        dd($request);
 
 
     }

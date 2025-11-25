@@ -29,6 +29,7 @@
               <!-- <p>用户ID:{{ scope.row.address_detail }}</p> -->
           </template>
       </el-table-column>
+      <el-table-column prop="status" label="状态" width="200" />
   </el-table>
 </template>
 
@@ -43,7 +44,7 @@ const props = defineProps({
 })
 
 // const data = ref<Array<object>>()
-const { data, loading } = useShow('schema', props.id)
+const { data, loading } = useShow('purchase/orders', props.id)
 </script>
 
 <style scoped></style>
