@@ -81,15 +81,17 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
+
         try {
 
-            $purchaseId = $this->purchaseModel->storeBy($request->only(['name','description','file']));
+            $data = array_merge($request->only(['name','description']),['file' => $request->post('path')]);
+            $purchaseId = $this->purchaseModel->storeBy($data);
             if (!empty($request->input('products'))) {
 
                 foreach ($request->input('products') as $product) {
 
                     $product['purchase_id'] = $purchaseId;
-                    $this->model->storeBy($product);
+                    $this->model->create($product);
                 }
 
             }
@@ -242,8 +244,8 @@ class PurchaseOrderController extends Controller
      */
     public function parseExcel($file)
     {
-//        $file = base_path() . DIRECTORY_SEPARATOR . $file;
-        $file = public_path() . DIRECTORY_SEPARATOR.'uploads\file\2025-11-17\20254VmmBZ3IX41763335428.xlsx';
+        $file = public_path() . DIRECTORY_SEPARATOR . $file;
+//        $file = public_path() . DIRECTORY_SEPARATOR.'uploads\file\2025-11-17\20254VmmBZ3IX41763335428.xlsx';
 
         // 检查文件是否存在
         if (!file_exists($file)) {

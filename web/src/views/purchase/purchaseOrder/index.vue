@@ -47,8 +47,8 @@
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <p style="margin: 10px 0;"><el-button size="small" v-if=" scope.row.status === 0" type="primary" @click="updatePurchare"><Icon name="eye" class="w-3 mr-1" /> 开始执行</el-button></p>
-            <p style="margin: 10px 0;"><el-button size="small" type="success" @click="view(scope.row.id)"><Icon name="eye" class="w-3 mr-1" /> 查看</el-button></p>
             <p style="margin: 10px 0;"><el-button size="small" v-if=" scope.row.status === 0" type="primary" @click="view(scope.row.id)"><Icon name="eye" class="w-3 mr-1" /> 作废</el-button></p>
+            <p style="margin: 10px 0;"><el-button size="small" type="success" @click="view(scope.row.id)"><Icon name="eye" class="w-3 mr-1" /> 查看</el-button></p>
           </template>
         </el-table-column>
       </el-table>
