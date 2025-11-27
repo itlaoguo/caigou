@@ -32,7 +32,7 @@ class Purchase extends Model
     /**
      * @var array
      */
-    protected array $fields = ['id','name','file', 'status','created_at','updated_at'];
+    protected array $fields = ['id','name','description','file', 'status','created_at','updated_at'];
 
     /**
      * @var array

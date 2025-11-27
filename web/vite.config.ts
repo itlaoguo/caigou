@@ -92,6 +92,11 @@ export default defineConfig(({ command, mode }) => {
           target: env.VITE_BASE_URL, // 后端接口地址
           changeOrigin: true, // 修改请求头中的 origin 为目标地址
           rewrite: path => path.replace(/^\/api/, '') // 可选：移除请求路径中的 /api 前缀
+        },
+        '/public': {
+          target: env.VITE_BASE_URL || 'http://caigou-api.yuanmapai.net.local', // Laravel 服务器地址
+          changeOrigin: true,
+          // 不重写路径，直接转发 /public 到后端
         }
       }
     },
