@@ -20,6 +20,7 @@ use AlibabaCloud\SDK\Linkedmall\V20230930\Models\ListPurchaserShopsRequest;
 use AlibabaCloud\SDK\Linkedmall\V20230930\Models\SplitPurchaseOrderRequest;
 use AlibabaCloud\Tea\Tea;
 use AlibabaCloud\Tea\Utils\Utils;
+use AlibabaCloud\Tea\Exception\TeaUnableRetryError;
 
 use Catch\Base\CatchModel as Model;
 use function PHPUnit\Framework\isArray;
@@ -99,10 +100,11 @@ class PurchaseOrder extends Model
      * @var array
      */
     public array $searchable = [
-        'product_id',
-        'product_title',
-        'sku_id',
-        'sku_title',
+        'purchase_id'=>'=',
+        'product_id'=>'=',
+        'product_title'=>'like',
+        'sku_id'=>'=',
+        'sku_title'=>'like',
     ];
 
     protected bool $isPaginate = true;
@@ -256,22 +258,28 @@ class PurchaseOrder extends Model
         $headers = [];
 
         try {
+
             // 复制代码运行请自行打印 API 的返回值
             $response = $this->client->splitPurchaseOrderWithOptions($splitPurchaseOrderRequest, $headers, $this->runtime);
             $data =Tea::merge($response->body);
             return $data;
         }
         catch (Exception $error) {
-            if (!($error instanceof TeaError)) {
-                $error = new TeaError([], $error->getMessage(), $error->getCode(), $error);
-            }
 
             $errorData = [
-                'message' => $error->message ?? '未知错误',
-                'code' => $error->code ?? '未知错误码'
+                'message' => $error->getMessage() ?? '未知错误',
+                'code' => $error->getCode() ?? '未知错误码'
             ];
 
-            throw new FailedException('LinkedMall API调用失败: ' . json_encode($errorData, JSON_UNESCAPED_UNICODE));
+            if ($error instanceof TeaError) {
+               $errorInfo = $error->getErrorInfo();
+                $errorData = [
+                    'message' => $errorInfo['data']['errorMessage'],
+                    'code' => $errorInfo['data']['errorCode'],
+                ];
+            }
+
+            throw new FailedException(json_encode($errorData, JSON_UNESCAPED_UNICODE));
         }
     }
 

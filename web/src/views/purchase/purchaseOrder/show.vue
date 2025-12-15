@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="productList" border v-loading="loading" style="width: 100%">
+  <el-table :data="tableData" border v-loading="loading" style="width: 100%">
       <el-table-column label="商品信息" >
           <template #default="scope">
               <div class="flex">
@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 // @ts-nocheck
-import { useShow } from '@/composables/curd/useShow'
+import { useGetList } from '@/composables/curd/useGetList'
 const props = defineProps({
   id: {
     type: Number,
@@ -44,7 +44,16 @@ const props = defineProps({
 })
 
 // const data = ref<Array<object>>()
-const { data, loading } = useShow('purchase/orders', props.id)
+let api = `purchase/orders/${props.id}`
+const { data, query, search, reset, loading } = useGetList(api)
+
+const tableData = computed(() => data.value?.data)
+
+onMounted(() => {
+  search()
+  
+})
+
 </script>
 
 <style scoped></style>

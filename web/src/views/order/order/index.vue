@@ -27,7 +27,6 @@
             <el-form-item label="收件手机" prop="telephone">
                 <el-input v-model="query.telephone"  placeholder="请输入" name="telephone" clearable />
             </el-form-item>
-            
       </template>
     </Search>
     <div class="table-default">
