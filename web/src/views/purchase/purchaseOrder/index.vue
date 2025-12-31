@@ -77,6 +77,7 @@ const api = 'purchase/order'
 const { data, query, search, reset, loading } = useGetList(api)
 const { destroy, deleted } = useDestroy()
 const { open, close, title, visible, id } = useOpen()
+console.log(query.value,typeof query.value,'------------------');
 
 
 const purchaseOrdersVisible = ref<boolean>(false)
